@@ -1,0 +1,14 @@
+import type { Metadata } from 'next';
+import Link from 'next/link';
+import { prisma } from '@/lib/db/prisma';
+
+export const dynamic = 'force-dynamic';
+export const metadata: Metadata = { title: 'Insights for Better Local Business Decisions', description: 'Guides and practical advice from Hello Minto to help people discover local businesses and help businesses grow.' };
+
+export default async function BlogIndexPage() {
+  let posts: Array<{ id: string; title: string; slug: string; excerpt: string | null; featuredImage: string | null; publishedAt: Date | null; author: { name: string | null } | null }> = [];
+  try {
+    posts = await prisma.post.findMany({ where: { status: 'PUBLISHED', publishedAt: { lte: new Date() }, seo: { is: { noIndex: false } } }, select: { id: true, title: true, slug: true, excerpt: true, featuredImage: true, publishedAt: true, author: { select: { name: true } } }, orderBy: [{ publishedAt: 'desc' }, { id: 'asc' }], take: 50 });
+  } catch { /* Keep the public shell available while the database is being configured. */ }
+  return <main className="public-blog-shell"><header className="public-blog-nav"><Link href="/" className="public-blog-brand"><span>hm</span>Hello<span>Minto</span></Link><Link href="/" className="public-blog-back">Explore businesses <span>↗</span></Link></header><section className="public-blog-hero"><p className="public-blog-eyebrow">THE HELLO MINTO JOURNAL</p><h1>Local knowledge.<br/><em>Better decisions.</em></h1><p>Helpful ideas for finding trusted services, growing local businesses, and making every connection count.</p></section><section className="public-blog-grid" aria-label="Published articles">{posts.map((post) => <article className="public-blog-card" key={post.id}>{post.featuredImage ? <Link href={`/blog/${post.slug}`} className="public-blog-image"><img src={post.featuredImage} alt="" loading="lazy"/></Link> : <div className="public-blog-image public-blog-image-placeholder"><span>hm</span></div>}<div className="public-blog-card-content"><small>{post.publishedAt ? post.publishedAt.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }) : 'Hello Minto Journal'} · {post.author?.name || 'Hello Minto Editorial'}</small><h2><Link href={`/blog/${post.slug}`}>{post.title}</Link></h2><p>{post.excerpt || 'Explore practical tips, local insights and useful advice from Hello Minto.'}</p><Link className="public-blog-read" href={`/blog/${post.slug}`}>Read article <span>→</span></Link></div></article>)}</section>{posts.length===0&&<section className="public-blog-empty"><h2>Fresh ideas are on the way.</h2><p>Our articles will appear here once they are published.</p></section>}<footer className="public-blog-footer">© {new Date().getFullYear()} Hello Minto <span>Get Found. Get Leads. Grow Faster.</span></footer></main>;
+}
