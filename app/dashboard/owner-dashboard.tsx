@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { ArrowLeft, ArrowUpRight, Building2, CheckCircle2, Clock3, Eye, EyeOff, LockKeyhole, LogOut, MessageSquareText, Plus, RefreshCw, ShieldCheck, Sparkles } from 'lucide-react';
+import { ArrowLeft, ArrowRight, ArrowUpRight, Building2, CheckCircle2, Clock3, Eye, EyeOff, LockKeyhole, LogOut, MessageSquareText, Plus, RefreshCw, ShieldCheck, Sparkles } from 'lucide-react';
 
 type Lead = { id: string; businessName: string; status: string; createdAt: string; locked: boolean; reference?: string; name?: string; contact?: string; message?: string; planName?: string | null };
 type Me = { id: string; name?: string | null; email: string; roles: string[] };
